@@ -1,13 +1,14 @@
 class Node
 	attr_reader :pos, :left, :right, :up, :down
 	
-	def initialize(pos)
+	def initialize(name, pos)
+		@name = name
 		@pos = pos
 		@left = nil
 		@right = nil
 		@up = nil
 		@down = nil
-		#create_relationships
+		create_relationships
 	end
 
 	def create_relationships
@@ -25,32 +26,54 @@ class Node
 	end
 end
 
-class Board
-	def create_nodes
-		x_axis = ["a","b","c","d","e","f","g","h"]
-		y_axis = [1..8]
-		count = 1
-		x_axis.each do |x|
-			y_axis.each do |x, y|
-				name = x + y.to_s
-				node = Node.new([0,0])
-				@node = name
-				puts "#{count}: #{name.inspect}"
-				count +=1
-			end
-		end
-		puts @name.to_s
+class Array
+	def verify_relationship(r)
+		r.each {|i| i<0||i>8 ? (return false) : true}
 	end
 end
 
-class Array
-	def verify_relationship(r)
-		r.each {|i| i<0||i>7 ? (return false) : true}
+class Board
+	attr_reader :nodes
+
+	def initialize
+		@nodes = Hash.new
+		@new_node = nil
+	end
+
+	def create_nodes
+		x_name = ["a","b","c","d","e","f","g","h"]
+		y_name = [1,2,3,4,5,6,7,8]
+		x_pos = 1
+		x_name.each do |x|
+			y_pos = 1
+			y_name.each do |y|
+				name = "#{x}#{y}"
+				@new_node = Node.new(name, [x_pos,y_pos])
+				@nodes[[x_pos, y_pos]] = @new_node
+				y_pos +=1
+			end
+			x_pos += 1
+		end
+	end
+
+	def relate_nodes
+		@nodes.each do |k, v|
+			if v.left != nil
+				nodes.each {|checked| v.left = checked if checked == v.left}
+			end
+		end
 	end
 end
 
 board = Board.new
 board.create_nodes
+board.relate_nodes
+board.nodes.each do |node|
+	puts node.inspect
+	puts
+end
+
+#puts board.nodes["a1"].inspect
 
 =begin
 a1 = Node.new([0,0])
